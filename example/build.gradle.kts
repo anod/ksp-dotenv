@@ -22,14 +22,15 @@ application {
 }
 
 dependencies {
-    add("kspCommonMainMetadata", project(":plugin"))
-    add("kspJvm", project(":plugin"))
+    add("kspCommonMainMetadata", project(":ksp-dotenv"))
+    add("kspJvm", project(":ksp-dotenv"))
 }
 
 ksp {
-    arg("info.anodsplace.dotenv.path", File(project.rootDir, "env.example").toString())
+    arg("info.anodsplace.dotenv.path", project.rootDir.toString())
+    arg("info.anodsplace.dotenv.filename", "env.example") // default ".env"
     arg("info.anodsplace.dotenv.allowedKeys", "ENDPOINT*;ENV")
     arg("info.anodsplace.dotenv.camelCase", "true")
-    arg("info.anodsplace.dotenv.package", "info.anodsplace.subscriptions")
-    arg("info.anodsplace.dotenv.class", "DotEnvClient")
+    arg("info.anodsplace.dotenv.package", "info.anodsplace.dotenv.generated")
+    arg("info.anodsplace.dotenv.class", "DotEnvExample")
 }

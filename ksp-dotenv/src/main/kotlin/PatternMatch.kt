@@ -1,4 +1,3 @@
-package info.anodsplace.dotenv
 
 // https://leetcode.com/problems/wildcard-matching/solutions/3402050/detailed-explaination-with-pictures-in-c-java-python-dp-top-down-tabulation/
 fun isMatch(input: String, pattern: String): Boolean {

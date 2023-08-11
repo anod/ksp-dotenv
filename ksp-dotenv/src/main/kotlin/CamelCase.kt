@@ -1,4 +1,3 @@
-package info.anodsplace.dotenv
 
 fun String.camelcase(): String {
     // https://hexdocs.pm/dotenvy/dotenv-file-format.html

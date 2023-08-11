@@ -1,28 +1,22 @@
-package info.anodsplace.dotenv
-
 import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.*
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ksp.writeTo
-import java.io.File
 
 class DotEnvKspProcessor(
     environment: SymbolProcessorEnvironment,
 ) : SymbolProcessor {
-
     private var invoked = false
     private val codeGenerator = environment.codeGenerator
     private val options = Options(environment.options)
     private val logger: KSPLogger = DelegateLogger(environment.logger)
-    private val parser = DotEnvParserFactory.create()
+    private val parser = DotEnvKspParserFactory.create()
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
         if (invoked) {
             return emptyList()
         }
-        val file = resolveFile(options.path)
-        logger.info("Resolved file: $file")
-        val entries = parser.parse(file.absolutePath)
+        val entries = parser.parse(options.path, options.filename)
             .let { filterKeys(it) }
             .let { adjustKeyCase(it) }
 
@@ -32,7 +26,7 @@ class DotEnvKspProcessor(
         return emptyList()
     }
 
-    private fun filterKeys(entries: Collection<DotEnvEntry>): Collection<DotEnvEntry> {
+    private fun filterKeys(entries: Collection<DotEnvKspEntry>): Collection<DotEnvKspEntry> {
         return if (options.allowedKeys.isEmpty()) {
             entries
         } else {
@@ -40,7 +34,7 @@ class DotEnvKspProcessor(
         }
     }
 
-    private fun adjustKeyCase(entries: Collection<DotEnvEntry>): Collection<DotEnvEntry> {
+    private fun adjustKeyCase(entries: Collection<DotEnvKspEntry>): Collection<DotEnvKspEntry> {
         return if (options.camelCase) {
             entries.map { it.copy(key = it.key.camelcase()) }
         } else {
@@ -48,17 +42,7 @@ class DotEnvKspProcessor(
         }
     }
 
-    private fun resolveFile(configPath: String): File {
-        val file = File(configPath)
-        if (file.isFile) {
-            return file
-        } else if (file.isDirectory) {
-            return File(file, Options.defaultFile)
-        }
-        return File(Options.defaultFile)
-    }
-
-    private fun generateFile(entries: Collection<DotEnvEntry>): FileSpec {
+    private fun generateFile(entries: Collection<DotEnvKspEntry>): FileSpec {
         val properties = entries.map { entry ->
             logger.info("  ${entry.key}=${entry.value}")
             PropertySpec.builder(entry.key, String::class)
@@ -105,4 +89,8 @@ private class DelegateLogger(val delegate: KSPLogger) : KSPLogger {
     private fun prefix(message: String) = "[info.anodsplace.dotenv] $message"
 }
 
-
+class DotEnvProcessorProvider : SymbolProcessorProvider {
+    override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor {
+        return DotEnvKspProcessor(environment)
+    }
+}

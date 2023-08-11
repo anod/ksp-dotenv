@@ -25,7 +25,7 @@ plugins {
 }
 
 include(
-    ":plugin",
+    ":ksp-dotenv",
     ":example"
 )
 rootProject.name = "ksp-dotenv"
