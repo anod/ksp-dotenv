@@ -6,7 +6,6 @@ pluginManagement {
         kotlin("multiplatform") version kotlinVersion apply false
     }
     repositories {
-        mavenLocal()
         mavenCentral()
         gradlePluginPortal()
     }
@@ -16,7 +15,6 @@ dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         mavenCentral()
-        mavenLocal()
     }
 }
 
