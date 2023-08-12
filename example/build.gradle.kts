@@ -13,7 +13,10 @@ kotlin {
     }
 
     sourceSets {
-        val jvmMain by getting
+        val jvmMain by getting {
+            // make different package visible to IDE
+            kotlin.srcDir("build/generated/ksp/jvm/jvmMain/kotlin")
+        }
     }
 }
 
